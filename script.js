@@ -33,12 +33,12 @@
     doc.setTextColor(10,200,255);
     doc.text('Smart Health Kit — Demo Report', margin, y);
     y += 24;
-    doc.setDrawColor(40,60,80);
+    doc.setDrawColor(0,0,0);
     doc.line(margin, y, 595-margin, y);
     y += 18;
 
     doc.setFontSize(12);
-    doc.setTextColor(220,220,230);
+    doc.setTextColor(0,0,0);
     doc.text(`Name: ${name}`, margin, y); y += 16;
     doc.text(`Age: ${age}`, margin, y); y += 16;
     doc.text(`Gender: ${gender}`, margin, y); y += 24;
@@ -70,7 +70,7 @@
 
     // Footer note
     doc.setFontSize(10);
-    doc.setTextColor(150,150,160);
+    doc.setTextColor(0,0,0);
     doc.text('This is a demo report generated offline. Not a medical diagnosis.', margin, 820);
 
     // Save PDF
