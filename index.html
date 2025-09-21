@@ -1,127 +1,221 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Smart Health Kit</title>
-<link rel="stylesheet" href="styles.css">
-<!-- jsPDF CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
-  <div class="app-wrap">
-    <header class="header">
-      <div class="logo">SH</div>
-      <h1>Smart Health Kit</h1>
-    </header>
-    <div class="subtitle">Enter details → select symptoms → suggested tests → download report</div>
-
-    <div class="card" id="wizard">
-      <!-- reusing same structure as basic -->
-      <div class="step" data-step="1">
-        <div class="step-title">1) Patient Details</div>
-        <div class="form-row">
-          <div class="field">
-            <label>Full Name</label>
-            <input type="text" id="fullName" placeholder="e.g., Asha Verma">
-          </div>
-          <div class="field">
-            <label>Age (years)</label>
-            <input type="number" id="age" placeholder="e.g., 28">
-          </div>
-          <div class="field">
-            <label>Gender</label>
-            <select id="gender">
-              <option value="">Select...</option>
-              <option>Female</option><option>Male</option><option>Other</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label>Available kit tests</label>
-          <div class="chips" id="kitChips">
-            <div class="chip">ECG</div><div class="chip">EEG</div><div class="chip">EOG</div>
-            <div class="chip">EPG</div><div class="chip">BP</div><div class="chip">SpO₂</div>
-            <div class="chip">Temperature</div><div class="chip">Weight</div><div class="chip">Height</div>
-            <div class="chip">Fetal Doppler</div><div class="chip">Bilirubin</div><div class="chip">Glucose</div>
-            <div class="chip">CBC</div>
-          </div>
-        </div>
-
-        <div class="actions">
-          <div style="flex:1"></div>
-          <button class="btn primary" id="toStep2">Next: Select Symptoms →</button>
-        </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neuro Screening Kit</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="app-wrap">
+      <header class="header">
+        <div class="logo">NS</div>
+        <h1>Neuro Screening Kit</h1>
+      </header>
+      <div class="subtitle">
+        Enter Details → Select Symptoms → Suggested Tests → Download Report
       </div>
 
-      <div class="step" data-step="2" style="display:none">
-        <div class="step-title">2) Select Symptoms</div>
-        <div class="checkbox-grid">
-          <div class="sym-row"><input type="checkbox" id="s1"><label for="s1">Fever</label></div>
-          <div class="sym-row"><input type="checkbox" id="s2"><label for="s2">Cough</label></div>
-          <div class="sym-row"><input type="checkbox" id="s3"><label for="s3">Cold</label></div>
-
-          <div class="sym-row"><input type="checkbox" id="s4"><label for="s4">Pregnancy</label></div>
-          <div class="sym-row"><input type="checkbox" id="s5"><label for="s5">Malnutrition</label></div>
-          <div class="sym-row"><input type="checkbox" id="s6"><label for="s6">Fatigue</label></div>
-
-          <div class="sym-row"><input type="checkbox" id="s7"><label for="s7">Pain in any body part</label></div>
-          <div class="sym-row"><input type="checkbox" id="s8"><label for="s8">Accident</label></div>
-          <div class="sym-row"><input type="checkbox" id="s9"><label for="s9">Heart pain</label></div>
-
-          <div class="sym-row"><input type="checkbox" id="s10"><label for="s10">Headache</label></div>
-        </div>
-
-        <div style="margin-top:12px">
-          <label>Other problem (optional)</label>
-          <textarea id="otherProblem" placeholder="Describe any other issues..." rows="3"></textarea>
-        </div>
-
-        <div class="actions">
-          <button class="btn ghost" id="backTo1">← Back</button>
-          <button class="btn primary" id="toStep3">Suggest Tests</button>
-        </div>
-      </div>
-
-      <div class="step" data-step="3" style="display:none">
-        <div class="step-title">3) Suggested Tests (from kit)</div>
-
-        <div id="suggestedList">
-          <div class="sym-row"><input type="checkbox" id="t1" checked><label for="t1">BP</label><span class="badge">available</span></div>
-          <div class="sym-row"><input type="checkbox" id="t2" checked><label for="t2">CBC</label><span class="badge">available</span></div>
-          <div class="sym-row"><input type="checkbox" id="t3" checked><label for="t3">Glucose</label><span class="badge">available</span></div>
-          <div class="sym-row"><input type="checkbox" id="t4" checked><label for="t4">Height</label><span class="badge">available</span></div>
-          <div class="sym-row"><input type="checkbox" id="t5" checked><label for="t5">SpO₂</label><span class="badge">available</span></div>
-          <div class="sym-row"><input type="checkbox" id="t6" checked><label for="t6">Temperature</label><span class="badge">available</span></div>
-          <div class="sym-row"><input type="checkbox" id="t7" checked><label for="t7">Weight</label><span class="badge">available</span></div>
-        </div>
-
-        <div class="two-col">
-          <div>
-            <label>Additional notes (optional)</label>
-            <textarea id="notes" rows="5" placeholder="Add any observations or customization for the report..."></textarea>
-          </div>
-          <div>
-            <label>Yoga/Pranayama auto-recommended (editable)</label>
-            <div class="yoga-box" id="yogaBox" contenteditable="true" spellcheck="false">
-              <ul style="padding-left:18px;margin:8px 0;color:#cfeffd">
-                <li>Restorative poses (Child's Pose)</li>
-                <li>Sheetali/Sheetkari (cooling breath)</li>
-                <li>Light Surya Namaskar</li>
-                <li>Deep breathing before meals</li>
-              </ul>
+      <div class="card" id="wizard">
+        <!-- reusing same structure as basic -->
+        <div class="step" data-step="1">
+          <div class="step-title">1) Patient Details</div>
+          <div class="form-row">
+            <div class="field">
+              <label>Full Name</label>
+              <input type="text" id="fullName" placeholder="Enter your name" />
+            </div>
+            <div class="field">
+              <label>Age</label>
+              <input type="number" id="age" placeholder="Enter your age" />
+            </div>
+            <div class="field">
+              <label>Gender</label>
+              <select id="gender">
+                <option value="">Select...</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Height (cm)</label>
+              <input
+                type="text"
+                id="fullName"
+                placeholder="Enter your height"
+              />
+            </div>
+            <div class="field">
+              <label>Weight</label>
+              <input
+                type="text"
+                id="fullName"
+                placeholder="Enter your weight"
+              />
             </div>
           </div>
+
+          <div>
+            <label>Available kit tests</label>
+            <div class="chips" id="kitChips">
+              <div class="chip">ECG</div>
+              <div class="chip">EEG</div>
+              <div class="chip">EOG</div>
+              <div class="chip">EPG</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <div style="flex: 1"></div>
+            <button class="btn primary" id="toStep2">Select Symptoms →</button>
+          </div>
         </div>
 
-        <div class="actions">
-          <button class="btn ghost" id="backTo2">← Back</button>
-          <button class="btn primary" id="generatePdf">Generate Demo PDF</button>
+        <div class="step" data-step="2" style="display: none">
+          <div class="step-title">2) Select Symptoms</div>
+          <div class="checkbox-grid">
+            <div class="sym-row">
+              <input type="checkbox" id="s1" /><label for="s1">Fever</label>
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s2" /><label for="s2">Cough</label>
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s3" /><label for="s3">bradykinesia</label>
+            </div>
+
+            <div class="sym-row">
+              <input type="checkbox" id="s4" /><label for="s4"
+                >Memory Loss</label
+              >
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s5" /><label for="s5"
+                >Loss of Smell</label
+              >
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s6" /><label for="s6"
+                >Absence Seizures</label
+              >
+            </div>
+
+            <div class="sym-row">
+              <input type="checkbox" id="s7" /><label for="s7">Rigidity</label>
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s8" /><label for="s8"
+                >Resting Tremor</label
+              >
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s8" /><label for="s8"
+                >Vision Problem</label
+              >
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s8" /><label for="s8"
+                >Unsteady Gait</label
+              >
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s9" /><label for="s9"
+                >Heart pain</label
+              >
+            </div>
+
+            <div class="sym-row">
+              <input type="checkbox" id="s10" /><label for="s10"
+                >Severe Headache</label
+              >
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="s11" /><label for="s11"
+                >Dizziness</label
+              >
+            </div>
+          </div>
+
+          <div style="margin-top: 12px">
+            <label>Other problem (optional)</label>
+            <textarea
+              id="otherProblem"
+              placeholder="Describe any other issues..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn ghost" id="backTo1">← Back</button>
+            <button class="btn primary" id="toStep3">Suggest Tests</button>
+          </div>
+        </div>
+
+        <div class="step" data-step="3" style="display: none">
+          <div class="step-title">3) Suggested Tests (from kit)</div>
+
+          <div id="suggestedList">
+            <div class="sym-row">
+              <input type="checkbox" id="t1" /><label for="t1">ECG</label
+              ><span class="badge">available</span>
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="t2" checked /><label for="t2"
+                >EEG</label
+              ><span class="badge">available</span>
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="t3" checked /><label for="t3"
+                >EOG</label
+              ><span class="badge">available</span>
+            </div>
+            <div class="sym-row">
+              <input type="checkbox" id="t4" checked /><label for="t4"
+                >EMG</label
+              ><span class="badge">available</span>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <!-- <label>Additional notes (optional)</label>
+              <textarea
+                id="notes"
+                rows="5"
+                placeholder="Add any observations or customization for the report..."
+              ></textarea> -->
+            <!-- </div>
+            <div>
+              <label>Yoga/Pranayama auto-recommended (editable)</label>
+              <div
+                class="yoga-box"
+                id="yogaBox"
+                contenteditable="true"
+                spellcheck="false"
+              >
+                <ul style="padding-left: 18px; margin: 8px 0; color: #cfeffd">
+                  <li>Restorative poses (Child's Pose)</li>
+                  <li>Sheetali/Sheetkari (cooling breath)</li>
+                  <li>Light Surya Namaskar</li>
+                  <li>Deep breathing before meals</li>
+                </ul>
+              </div>
+            </div> -->
+          </div>
+
+          <div class="actions">
+            <button class="btn ghost" id="backTo2">← Back</button>
+            <button class="btn primary" id="generatePdf">
+              Generate Demo PDF
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-<script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
